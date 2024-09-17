@@ -5,7 +5,6 @@ public class PlayerMovement : MonoBehaviour
 	public float speed;
 	public float jumpSpeed;
 	public Transform groundCheck;
-	public float groundCheckRadius;
 	public LayerMask groundLayer;
 
 	private bool _isGrounded;
@@ -18,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
 
 	private void Update()
 	{
-		_isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+		_isGrounded = Physics2D.OverlapBox(groundCheck.position, new (GetComponent<SpriteRenderer>().bounds.size.x, 0.5f), 0, groundLayer);
 		_body.velocity = new (Input.GetAxis("Horizontal") * speed, _body.velocity.y);
 
 		FlipCharacterOnMovement();
