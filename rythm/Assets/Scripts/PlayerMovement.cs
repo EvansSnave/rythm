@@ -17,12 +17,17 @@ public class PlayerMovement : MonoBehaviour
 
 	private void Update()
 	{
-		_isGrounded = Physics2D.OverlapBox(groundCheck.position, new (GetComponent<SpriteRenderer>().bounds.size.x, 0.5f), 0, groundLayer);
 		_body.velocity = new (Input.GetAxis("Horizontal") * speed, _body.velocity.y);
 
 		FlipCharacterOnMovement();
 
-		if (Input.GetKey(KeyCode.Space) && _isGrounded) _body.velocity = new (_body.velocity.x, jumpSpeed);
+
+	}
+
+	private void FixedUpdate()
+	{
+		_isGrounded = Physics2D.OverlapBox(groundCheck.position, new(GetComponent<SpriteRenderer>().bounds.size.x, 0.3f), 0, groundLayer);
+		if (Input.GetKey(KeyCode.Space) && _isGrounded) _body.velocity = new(_body.velocity.x, jumpSpeed);
 	}
 
 	private void FlipCharacterOnMovement()
