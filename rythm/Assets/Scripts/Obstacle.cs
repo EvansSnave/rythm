@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class Obstacle : MonoBehaviour
 {
 	[SerializeField] private float _damage;
 
