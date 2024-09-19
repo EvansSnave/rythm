@@ -9,6 +9,9 @@ public class Rhythm : MonoBehaviour
 	[SerializeField] private float _tempoDuration = 4.0f;
 	[SerializeField] private float[] _beatTimings;
 
+	public delegate void OnBeatDelegate();
+	public event OnBeatDelegate OnBeat;
+
 	private void Awake()
 	{
 		_rhythmGuide = GetComponent<Image>();
@@ -45,6 +48,8 @@ public class Rhythm : MonoBehaviour
 		_rhythmGuide.color = imageColor;
 
 		StartCoroutine(FadeOut());
+
+		OnBeat?.Invoke();
 	}
 
 	private IEnumerator FadeOut()

@@ -20,8 +20,6 @@ public class PlayerMovement : MonoBehaviour
 		_body.velocity = new (Input.GetAxis("Horizontal") * speed, _body.velocity.y);
 
 		FlipCharacterOnMovement();
-
-
 	}
 
 	private void FixedUpdate()
