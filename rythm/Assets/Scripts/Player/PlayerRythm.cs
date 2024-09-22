@@ -6,14 +6,13 @@ public class PlayerRythm : MonoBehaviour
 	[SerializeField] private Rhythm _rhythm;
 	[SerializeField] private float _perfectThreshold = 1.0f;
 	private int _perfectNotes = 0;
-	private int _totalNotes = 4;
-	private bool _canPlayNotes = true;
-	private float _currentBeatTime = 0;
 	private bool _notePlayedThisBeat = true;
 	private int _keyPressCount = 0;
 	private float _keyPressTime = 0;
 	private int _currentBeatIndex;
 	private float _startTime;
+
+	public bool canPlayNotes { private set; get; } = true;
 
 	private void Start()
 	{
@@ -26,7 +25,7 @@ public class PlayerRythm : MonoBehaviour
 
 	private void Update()
 	{
-		if (_canPlayNotes) 
+		if (canPlayNotes) 
 		{ 
 			CheckForPlayerInput();
 		}
@@ -60,10 +59,10 @@ public class PlayerRythm : MonoBehaviour
 					_perfectNotes++;
 					_notePlayedThisBeat = true;
 
-					if (_perfectNotes == _totalNotes)
+					if (_perfectNotes == _rhythm.beatTimings.Length)
 					{
 						Debug.Log("Perfect Command!");
-						_canPlayNotes = false;
+						canPlayNotes = false;
 						StartCoroutine(ResetAfterTempo());
 						_perfectNotes = 0;
 					}
@@ -95,16 +94,13 @@ public class PlayerRythm : MonoBehaviour
 		float minTime = expectedBeatTime - _perfectThreshold;
 		float maxTime = expectedBeatTime + _perfectThreshold;
 
-		Debug.Log("Beat Time Range: [" + minTime + ", " + maxTime + "]");
-		Debug.Log("Key press time: " + _keyPressTime);
-
 		return _keyPressTime >= minTime && _keyPressTime <= maxTime;
 	}
 
 	private IEnumerator ResetAfterTempo()
 	{
 		yield return new WaitForSeconds(_rhythm.tempoDuration);
-		_canPlayNotes = true;
+		canPlayNotes = true;
 	}
 
 	private void ResetPerfectNotes() { 
@@ -122,7 +118,6 @@ public class PlayerRythm : MonoBehaviour
 			ResetPerfectNotes();
 		}
 
-		_currentBeatTime = Time.time;
 		_notePlayedThisBeat = false;
 		_keyPressCount = 0;
 		_currentBeatIndex = (_currentBeatIndex + 1) % _rhythm.beatTimings.Length;

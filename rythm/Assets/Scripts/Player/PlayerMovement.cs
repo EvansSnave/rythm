@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
 
 	private bool _isGrounded;
 	private Rigidbody2D _body;
+	private bool _canMove;
 
 	private void Awake()
 	{
@@ -17,15 +18,24 @@ public class PlayerMovement : MonoBehaviour
 
 	private void Update()
 	{
-		_body.velocity = new (Input.GetAxis("Horizontal") * speed, _body.velocity.y);
+		_canMove = !GetComponent<PlayerRythm>().canPlayNotes;
 
-		FlipCharacterOnMovement();
+		if (_canMove)
+		{
+			_body.velocity = new(Input.GetAxis("Horizontal") * speed, _body.velocity.y);
+
+			FlipCharacterOnMovement();
+		}
+		else
+		{
+			_body.velocity = new(0, _body.velocity.y);
+		}
 	}
 
 	private void FixedUpdate()
 	{
 		_isGrounded = Physics2D.OverlapBox(groundCheck.position, new(GetComponent<SpriteRenderer>().bounds.size.x, 0.3f), 0, groundLayer);
-		if (Input.GetKey(KeyCode.Space) && _isGrounded) _body.velocity = new(_body.velocity.x, jumpSpeed);
+		if (Input.GetKey(KeyCode.Space) && _isGrounded && _canMove) _body.velocity = new(_body.velocity.x, jumpSpeed);
 	}
 
 	private void FlipCharacterOnMovement()
