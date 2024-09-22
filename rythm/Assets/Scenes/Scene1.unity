@@ -525,12 +525,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _fadeDuration: 1
-  _tempoDuration: 4
-  _beatTimings:
-  - 0
+  tempoDuration: 4
+  beatTimings:
   - 1
   - 2
   - 3
+  - 4
 --- !u!1 &1089171827
 GameObject:
   m_ObjectHideFlags: 0
@@ -9658,8 +9658,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rhythm: {fileID: 539934121}
-  _perfectThreshold: 0.7
-  _tempoDuration: 4
+  _perfectThreshold: 0.3
 --- !u!1 &1221821464
 GameObject:
   m_ObjectHideFlags: 0

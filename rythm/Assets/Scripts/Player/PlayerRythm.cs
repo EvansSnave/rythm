@@ -5,13 +5,15 @@ public class PlayerRythm : MonoBehaviour
 {
 	[SerializeField] private Rhythm _rhythm;
 	[SerializeField] private float _perfectThreshold = 1.0f;
-	[SerializeField] private float _tempoDuration = 4;
 	private int _perfectNotes = 0;
 	private int _totalNotes = 4;
 	private bool _canPlayNotes = true;
 	private float _currentBeatTime = 0;
 	private bool _notePlayedThisBeat = true;
 	private int _keyPressCount = 0;
+	private float _keyPressTime = 0;
+	private int _currentBeatIndex;
+	private float _startTime;
 
 	private void Start()
 	{
@@ -19,6 +21,7 @@ public class PlayerRythm : MonoBehaviour
 		{
 			_rhythm.OnBeat += HandleBeat;
 		}
+		_startTime = Time.time;
 	}
 
 	private void Update()
@@ -45,10 +48,12 @@ public class PlayerRythm : MonoBehaviour
 		}
 		else if (keysPressed == 1)
 		{
+			_keyPressTime = Time.time;
 			_keyPressCount++;
 
 			if (_keyPressCount == 1)
 			{
+
 				if (IsPerfectNote())
 				{
 					Debug.Log("Perfect Note!");
@@ -79,13 +84,26 @@ public class PlayerRythm : MonoBehaviour
 
 	private bool IsPerfectNote()
 	{
-		float timeSinceLastBeat = Time.time - _currentBeatTime;
-		return Mathf.Abs(timeSinceLastBeat) <= _perfectThreshold;
+		// Determine which tempo cycle we're in
+		float elapsedTime = Time.time - _startTime;
+		float currentTempoCycleStart = Mathf.Floor(elapsedTime / _rhythm.tempoDuration) * _rhythm.tempoDuration;
+
+		// Get the expected time for this beat in the current tempo cycle
+		float expectedBeatTime = currentTempoCycleStart + _rhythm.beatTimings[_currentBeatIndex];
+
+		// Calculate the allowed time range for a perfect note hit
+		float minTime = expectedBeatTime - _perfectThreshold;
+		float maxTime = expectedBeatTime + _perfectThreshold;
+
+		Debug.Log("Beat Time Range: [" + minTime + ", " + maxTime + "]");
+		Debug.Log("Key press time: " + _keyPressTime);
+
+		return _keyPressTime >= minTime && _keyPressTime <= maxTime;
 	}
 
 	private IEnumerator ResetAfterTempo()
 	{
-		yield return new WaitForSeconds(_tempoDuration);
+		yield return new WaitForSeconds(_rhythm.tempoDuration);
 		_canPlayNotes = true;
 	}
 
@@ -93,6 +111,7 @@ public class PlayerRythm : MonoBehaviour
 		_perfectNotes = 0;
 		_notePlayedThisBeat = false;
 		_keyPressCount = 0;
+		_currentBeatIndex = 0;
 	}
 
 	private void HandleBeat()
@@ -106,5 +125,6 @@ public class PlayerRythm : MonoBehaviour
 		_currentBeatTime = Time.time;
 		_notePlayedThisBeat = false;
 		_keyPressCount = 0;
+		_currentBeatIndex = (_currentBeatIndex + 1) % _rhythm.beatTimings.Length;
 	}
 }

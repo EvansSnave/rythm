@@ -6,9 +6,9 @@ public class Rhythm : MonoBehaviour
 {
 	private Image _rhythmGuide;
 	[SerializeField] private float _fadeDuration = 1.0f;
-	[SerializeField] private float _tempoDuration = 4.0f;
-	[SerializeField] private float[] _beatTimings;
 
+	public float tempoDuration = 4.0f;
+	public float[] beatTimings;
 	public delegate void OnBeatDelegate();
 	public event OnBeatDelegate OnBeat;
 
@@ -29,13 +29,26 @@ public class Rhythm : MonoBehaviour
 
 	private IEnumerator RhythmLoop()
 	{
-		while(true)
+		float totalElapsedTime = 0f;
+
+		while (true)
 		{
-			foreach(float beatTime in _beatTimings) {
-				Invoke("Beat", beatTime);
+			// Loop through the beat timings array and invoke beats at the correct times.
+			foreach (float beatTime in beatTimings)
+			{
+				// Calculate the next beat timing based on the current cycle (totalElapsedTime).
+				float nextBeatTime = totalElapsedTime + beatTime;
+				float currentTime = Time.time;
+
+				// If the current time is less than the next beat, wait for the beat to occur.
+				yield return new WaitForSeconds(nextBeatTime - currentTime);
+
+				// Trigger the beat.
+				Beat();
 			}
 
-			yield return new WaitForSeconds(_tempoDuration);
+			// After one full tempo cycle (all beats in the array), increase the total elapsed time.
+			totalElapsedTime += tempoDuration;
 		}
 	}
 
